@@ -6,38 +6,21 @@ using UnityEngine;
 public class Card : MonoBehaviour
 {
     private string cardOwner;
-    private Suit cardSuit;
-    private int cardValue;
+    private CardType cardType;
     private int cardScars;
+    private bool isFaceUp = true;
 
-    public static List<Card> CreateStandardDeck()
+    private SpriteRenderer cardRenderer;
+
+    void Start()
     {
-        List<Card> standardDeck = new List<Card>();
-
-        foreach (Suit suit in Enum.GetValues(typeof(Suit)))
-        {
-            for(int i = 1; i <= 13; i++)
-            {
-                Card card = new GameObject().AddComponent<Card>();
-                card.cardOwner = "Game Master";
-                card.CardSuit = suit;
-                card.cardValue = i;
-                card.cardScars = 0;
-
-                standardDeck.Add(card);
-            }
-        }
-
-        return standardDeck;
+        cardRenderer = GetComponent<SpriteRenderer>();
+        cardRenderer.sprite = CardArtDictionary.Instance.GetCardImage(cardType);
     }
 
-    // Enum for each possible card suit
-    public enum Suit
+    public override string ToString()
     {
-        Heart,
-        Diamond,
-        Club,
-        Spade
+        return "Card values: (Owner, Suit, Value, Scars) -- " + CardOwner + ", " + CardType.suit + ", " + CardType.value + ", " + CardScars;
     }
 
     // Accessors for card variables
@@ -46,19 +29,36 @@ public class Card : MonoBehaviour
         get { return cardOwner; }
         set { cardOwner = value; }
     }
-    public Suit CardSuit
+    public CardType CardType
     {
-        get { return cardSuit; }
-        set { cardSuit = value; }
-    }
-    public int CardValue
-    {
-        get { return cardValue; }
-        set { cardValue = value; }
+        get { return cardType; }
+        set { cardType = value; }
     }
     public int CardScars
     {
         get { return cardScars; }
         set { cardScars = value; }
     }
+    public bool IsFaceUp
+    {
+        get { return isFaceUp; }
+        set { isFaceUp = value; }
+    }
+
+}
+
+// Enum for each possible card suit
+public enum Suit
+{
+    Heart,
+    Diamond,
+    Club,
+    Spade
+}
+
+[System.Serializable]
+public struct CardType
+{
+    public Suit suit;
+    public int value;
 }

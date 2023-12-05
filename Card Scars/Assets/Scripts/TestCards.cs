@@ -6,16 +6,17 @@ public class TestCards : MonoBehaviour
 {
     // Added in to test creating a basic deck to see that each card does hold the right values
     // REMOVE WHEN DONE TESTING
-    public static List<Card> standardDeck;
+    public Deck deck;
+    private List<Card> standardDeck;
 
     // Start is called before the first frame update
     void Start()
     {
-        standardDeck = Card.CreateStandardDeck();
+        standardDeck = deck.CreateStandardDeck();
 
         foreach (Card card in standardDeck)
         {
-            Debug.Log("Card values: (Owner, Suit, Value, Scars) -- " + card.CardOwner + ", " + card.CardSuit + ", " + card.CardValue + ", " + card.CardScars);
+            Debug.Log(card);
         }
     }
 
