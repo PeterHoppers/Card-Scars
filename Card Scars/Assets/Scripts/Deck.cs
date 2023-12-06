@@ -15,6 +15,7 @@ public class Deck : MonoBehaviour
             for (int i = 1; i <= 13; i++)
             {
                 Card card = Instantiate(cardGameObject, transform);
+                card.gameObject.name = suit + " " + i.ToString();
                 card.CardOwner = "Game Master";
                 card.CardType = new CardType()
                 {
