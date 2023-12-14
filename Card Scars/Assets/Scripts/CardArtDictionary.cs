@@ -18,7 +18,11 @@ public class CardArtDictionary : MonoBehaviour
         Instance = this;
     }
 
-    //Create a method that returns a sprite based upon some parameters
+    public Sprite GetCardBack()
+    {
+        return cardBack;
+    }
+
     public Sprite GetCardImage(CardType cardType)
     { 
         return CardArts[cardType];
