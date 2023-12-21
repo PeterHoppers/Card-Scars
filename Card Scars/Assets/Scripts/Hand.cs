@@ -8,7 +8,7 @@ public class Hand : MonoBehaviour
     public int offsetFromAnchor = 200;
     public int maxHandSize = 5; //Unsure if needed, but keeps the visual from getting a bit weird
 
-    List<Card> _cards = new List<Card>();
+    List<Card> _cardsInHand = new List<Card>();
     Card _selectedCard;
 
     void Start()
@@ -18,28 +18,28 @@ public class Hand : MonoBehaviour
 
     void PositionCardsInHand()
     { 
-        double amountOfCards = _cards.Count;
+        double amountOfCards = _cardsInHand.Count;
         double positionMultiplier = -1 * (amountOfCards - 1) / 2;
 
         for (int cardIndex = 0; cardIndex < amountOfCards; cardIndex++)
         {
-            var card = _cards[cardIndex];
+            var card = _cardsInHand[cardIndex];
             card.PositionInHand = cardIndex;
             float cardRotation = (float)positionMultiplier * rotationPerCard;
-            card.transform.rotation = Quaternion.Euler(0, 0, cardRotation);            
+            card.transform.rotation = Quaternion.Euler(0, 0, cardRotation);
             positionMultiplier += 1;
         }
     }
 
     public void AddCardToHand(Card card)
     {
-        if (_cards.Count >= maxHandSize)
+        if (_cardsInHand.Count >= maxHandSize)
         {
             return;
         }
 
         card.SetHand(this, offsetFromAnchor);
-        _cards.Add(card);
+        _cardsInHand.Add(card);
         PositionCardsInHand();
     }
 
@@ -51,7 +51,10 @@ public class Hand : MonoBehaviour
         }
 
         var playedCard = _selectedCard;
-        _cards.Remove(playedCard);
+        playedCard.RemoveHand();
+        playedCard.transform.rotation = Quaternion.Euler(0, 0, 0);
+
+        _cardsInHand.Remove(playedCard);
         SetSelectedCard(playedCard, false);
         PositionCardsInHand();
 

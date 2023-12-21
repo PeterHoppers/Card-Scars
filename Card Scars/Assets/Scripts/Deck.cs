@@ -1,26 +1,12 @@
 using System;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class Deck : MonoBehaviour
 {
-    public Card cardGameObject;
-    public List<Card> cardsInDeck;
-    public List<Card> standardDeck;
-    public List<PlayerDeck> playerDecks;
-
-    void Start()
-    {
-        cardsInDeck = CreateStandardDeck();
-    }
-
-    public List<Card> CreateStandardDeck()
-    {
-        return CreateDeck(13);
-    }       
+    public List<Card> cardsInDeck;  
     
-    public List<Card> CreateDeck(int maxValueOfCard)
+    public List<Card> CreateDeck(Card cardType, int maxValueOfCard)
     {
         List<Card> standardDeck = new List<Card>();
 
@@ -28,7 +14,7 @@ public class Deck : MonoBehaviour
         {
             for (int i = 1; i <= maxValueOfCard; i++)
             { 
-                Card card = Instantiate(cardGameObject, transform.position, Quaternion.identity, transform);
+                Card card = Instantiate(cardType, transform.position, Quaternion.identity, transform);
                 card.gameObject.name = suit + " " + i.ToString();
                 card.CardOwner = "Game Master";
                 card.CardType = new CardType()
@@ -41,86 +27,33 @@ public class Deck : MonoBehaviour
                 standardDeck.Add(card);
             }
         }
-
+        cardsInDeck = standardDeck;
         return standardDeck;
     }
 
-    public Card DrawTopCard()
+    public void AddCard(Card addedCard)
+    {
+        addedCard.transform.SetParent(transform, false);
+        cardsInDeck.Add(addedCard);
+    }
+
+    public Card GetTopCard()
     {
         Card topCard = cardsInDeck[^1];
         cardsInDeck.Remove(topCard);
         return topCard;
     }
 
-    public void ShuffleAndDeal(int numPlayers)
-    {
-        // Shuffle the deck
-        ShuffleDeck();
-
-        CreatePlayerDecks(numPlayers);
-
-        // Deal the cards to players
-        DealCardsToPlayerDecks(numPlayers);
-    }
-
     public void ShuffleDeck()
     {
-        int i = standardDeck.Count;
+        int i = cardsInDeck.Count;
         while (i > 1)
         {
             i--;
             int k = UnityEngine.Random.Range(0, i + 1);
-            Card value = standardDeck[k];
-            standardDeck[k] = standardDeck[i];
-            standardDeck[i] = value;
-        }
-    }
-
-    private void CreatePlayerDecks(int numPlayers)
-    {
-        playerDecks = new List<PlayerDeck>();
-
-        for (int i = 0; i < numPlayers; i++)
-        {
-            // Create an empty game object for each player in the game
-            GameObject playerDeckObject = new GameObject("Player " + (i + 1) + " Deck");
-            playerDeckObject.transform.SetParent(transform);
-
-            // Add PlayerDeck component to the game object
-            PlayerDeck playerDeck = playerDeckObject.AddComponent<PlayerDeck>();
-
-            // Initialize lists for the player deck
-            playerDeck.cardsInHand = new List<Card>();
-            playerDeck.drawPile = new List<Card>();
-            playerDeck.discardPile = new List<Card>();
-
-            // Add the player deck to the list
-            playerDecks.Add(playerDeck);
-        }
-    }
-
-    private void DealCardsToPlayerDecks(int numPlayers)
-    {
-        Transform playerDeckParent1 = transform.Find("Player 1 Deck");
-        Transform playerDeckParent2 = transform.Find("Player 2 Deck");
-
-        int currentPlayer = 0;
-
-        foreach (Card card in standardDeck)
-        {
-            //Determine the parent object for the card
-            Transform cardParent = currentPlayer == 0 ? playerDeckParent1 : playerDeckParent2;
-
-            //Set the cards new parent object
-            card.transform.SetParent(cardParent);
-
-            //Assign card to the player deck and update the Card Owner
-            
-            playerDecks[currentPlayer].drawPile.Add(card);
-            card.CardOwner = "Player " + (currentPlayer + 1);
-
-            // Move to the next player in a round-robin fashion
-            currentPlayer = (currentPlayer + 1) % numPlayers;
+            Card value = cardsInDeck[k];
+            cardsInDeck[k] = cardsInDeck[i];
+            cardsInDeck[i] = value;
         }
     }
 }

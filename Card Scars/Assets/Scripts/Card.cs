@@ -52,9 +52,20 @@ public class Card : MonoBehaviour
         transform.SetParent(hand.transform, false);
 
         //since our visual is in the child, we need to make sure the values between the two of them respect the offset that we set up
+        UpdateVisualOffset(offsetFromAnchor);
+        FlipCard(true);
+    }
+
+    public void RemoveHand()
+    {
+        this.hand = null;
+        UpdateVisualOffset(0);
+    }
+
+    void UpdateVisualOffset(float offsetFromAnchor)
+    {
         transform.GetChild(0).localPosition = new Vector3(0, offsetFromAnchor, 0);
         GetComponent<BoxCollider2D>().offset = new Vector2(0, offsetFromAnchor);
-        FlipCard(true);
     }
 
     public void SetSelectState(bool isSelected)
@@ -71,7 +82,7 @@ public class Card : MonoBehaviour
         this.isSelected = isSelected;
     }
 
-    void FlipCard(bool isFaceUp)
+    public void FlipCard(bool isFaceUp)
     {
         if (isFaceUp)
         {
