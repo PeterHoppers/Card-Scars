@@ -182,6 +182,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cardGameObject: {fileID: 2793002492261297726, guid: 460669e89a856464c93c2b4a4d7ac504, type: 3}
+  standardDeck: []
+  playerDecks: []
 --- !u!1 &1010362452
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,12 +13,17 @@ public class TestCards : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        standardDeck = deck.CreateStandardDeck();
+        standardDeck = deck.CreateDeck("CardScars");
 
-        foreach (Card card in standardDeck)
-        {
-            Debug.Log(card);
-        }
+        deck.ShuffleAndDeal(2);
+
+        deck.playerDecks[0].DrawCard();
+
+        deck.playerDecks[0].DiscardTopCardOfDeck();
+        deck.playerDecks[0].DiscardTopCardOfDeck();
+        deck.playerDecks[0].DiscardTopCardOfDeck();
+
+        deck.playerDecks[0].GetDiscardPileTopCard();
     }
 
     // Update is called once per frame

@@ -8,7 +8,7 @@ public class Card : MonoBehaviour
     private string cardOwner;
     private CardType cardType;
     private int cardScars;
-    private bool isFaceUp = true;
+    private bool isFaceUp = false;
 
     private SpriteRenderer cardRenderer;
 
@@ -20,7 +20,7 @@ public class Card : MonoBehaviour
 
     public override string ToString()
     {
-        return "Card values: (Owner, Suit, Value, Scars) -- " + CardOwner + ", " + CardType.suit + ", " + CardType.value + ", " + CardScars;
+        return $"(Owner: {CardOwner}, Suit: {CardType.suit}, Value: {CardType.value}, Scars: {CardScars})";
     }
 
     // Accessors for card variables
