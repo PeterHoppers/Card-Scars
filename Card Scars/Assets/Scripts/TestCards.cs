@@ -8,12 +8,14 @@ public class TestCards : MonoBehaviour
     // Added in to test creating a basic deck to see that each card does hold the right values
     // REMOVE WHEN DONE TESTING
     public Deck deck;
+    public const int CARDS_SCARS_MAX_VALUE = 10;
     private List<Card> standardDeck;
+
 
     // Start is called before the first frame update
     void Start()
     {
-        standardDeck = deck.CreateDeck("CardScars");
+        standardDeck = deck.CreateDeck(CARDS_SCARS_MAX_VALUE);
 
         deck.ShuffleAndDeal(2);
 

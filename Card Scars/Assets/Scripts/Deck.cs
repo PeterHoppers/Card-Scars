@@ -6,7 +6,7 @@ using UnityEngine;
 public class Deck : MonoBehaviour
 {
     public Card cardGameObject;
-    public Stack<Card> cardsInDeck;
+    public List<Card> cardsInDeck;
     public List<Card> standardDeck;
     public List<PlayerDeck> playerDecks;
 
@@ -15,18 +15,19 @@ public class Deck : MonoBehaviour
         cardsInDeck = CreateStandardDeck();
     }
 
-    public Stack<Card> CreateStandardDeck()
+    public List<Card> CreateStandardDeck()
     {
         return CreateDeck(13);
     }       
     
-    public Stack<Card> CreateDeck(int maxValueOfCard)
+    public List<Card> CreateDeck(int maxValueOfCard)
     {
-        Stack<Card> standardDeck = new Stack<Card>();
+        List<Card> standardDeck = new List<Card>();
 
         foreach (Suit suit in Enum.GetValues(typeof(Suit)))
         {
             for (int i = 1; i <= maxValueOfCard; i++)
+            { 
                 Card card = Instantiate(cardGameObject, transform.position, Quaternion.identity, transform);
                 card.gameObject.name = suit + " " + i.ToString();
                 card.CardOwner = "Game Master";
@@ -37,7 +38,7 @@ public class Deck : MonoBehaviour
                 };
                 card.CardScars = 0;
 
-                standardDeck.Push(card);
+                standardDeck.Add(card);
             }
         }
 
@@ -46,7 +47,9 @@ public class Deck : MonoBehaviour
 
     public Card DrawTopCard()
     {
-        return cardsInDeck.Pop();
+        Card topCard = cardsInDeck[^1];
+        cardsInDeck.Remove(topCard);
+        return topCard;
     }
 
     public void ShuffleAndDeal(int numPlayers)
@@ -60,7 +63,7 @@ public class Deck : MonoBehaviour
         DealCardsToPlayerDecks(numPlayers);
     }
 
-    private void ShuffleDeck()
+    public void ShuffleDeck()
     {
         int i = standardDeck.Count;
         while (i > 1)
