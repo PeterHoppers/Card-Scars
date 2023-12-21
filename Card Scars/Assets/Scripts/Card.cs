@@ -87,7 +87,7 @@ public class Card : MonoBehaviour
 
     public override string ToString()
     {
-        return "Card values: (Owner, Suit, Value, Scars) -- " + CardOwner + ", " + CardType.suit + ", " + CardType.value + ", " + CardScars;
+        return $"(Owner: {CardOwner}, Suit: {CardType.suit}, Value: {CardType.value}, Scars: {CardScars})";
     }
 
     // Accessors for card variables
