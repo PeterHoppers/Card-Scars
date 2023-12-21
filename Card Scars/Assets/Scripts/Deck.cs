@@ -6,13 +6,25 @@ using UnityEngine;
 public class Deck : MonoBehaviour
 {
     public Card cardGameObject;
-    public List<Card> CreateStandardDeck()
+    public Stack<Card> cardsInDeck;
+
+    void Start()
     {
-        List<Card> standardDeck = new List<Card>();
+        cardsInDeck = CreateStandardDeck();
+    }
+
+    public Stack<Card> CreateStandardDeck()
+    {
+        return CreateDeck(13);
+    }
+
+    Stack<Card> CreateDeck(int maxValueOfCard)
+    {
+        Stack<Card> standardDeck = new Stack<Card>();
 
         foreach (Suit suit in Enum.GetValues(typeof(Suit)))
         {
-            for (int i = 1; i <= 13; i++)
+            for (int i = 1; i <= maxValueOfCard; i++)
             {
                 Card card = Instantiate(cardGameObject, transform);
                 card.gameObject.name = suit + " " + i.ToString();
@@ -24,10 +36,15 @@ public class Deck : MonoBehaviour
                 };
                 card.CardScars = 0;
 
-                standardDeck.Add(card);
+                standardDeck.Push(card);
             }
         }
 
         return standardDeck;
+    }
+
+    public Card DrawTopCard()
+    {
+        return cardsInDeck.Pop();
     }
 }
