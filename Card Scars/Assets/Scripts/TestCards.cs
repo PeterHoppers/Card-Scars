@@ -15,7 +15,7 @@ public class TestCards : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        standardDeck = deck.CreateDeck(CARDS_SCARS_MAX_VALUE);
+        /*standardDeck = deck.CreateDeck(CARDS_SCARS_MAX_VALUE);
 
         deck.ShuffleAndDeal(2);
 
@@ -25,7 +25,7 @@ public class TestCards : MonoBehaviour
         deck.playerDecks[0].DiscardTopCardOfDeck();
         deck.playerDecks[0].DiscardTopCardOfDeck();
 
-        deck.playerDecks[0].GetDiscardPileTopCard();
+        deck.playerDecks[0].GetDiscardPileTopCard();*/
     }
 
     // Update is called once per frame

@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    public Deck deck;
+    public PlayerDeck playerDeck;
     public Hand hand;
 
     public void DrawCardFromDeck()
     {
-        var card = deck.DrawTopCard();
+        var card = playerDeck.DrawCard();
         hand.AddCardToHand(card);
     }
 
@@ -19,8 +19,12 @@ public class Player : MonoBehaviour
         var card = hand.PlaySelectedCard();
         if (card != null)
         {
-            //TODO: Add the card here to the discard pile
-            card.gameObject.SetActive(false);
+            playerDeck.discardPile.AddCard(card);
         }        
+    }
+
+    public void AddCardToDeck(Card addedCard)
+    { 
+        playerDeck.drawPile.AddCard(addedCard);
     }
 }
