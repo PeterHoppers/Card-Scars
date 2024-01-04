@@ -10,6 +10,7 @@ public class Hand : MonoBehaviour
 
     List<Card> _cardsInHand = new List<Card>();
     Card _selectedCard;
+    bool _isShown = false;
 
     void Start()
     {
@@ -38,7 +39,7 @@ public class Hand : MonoBehaviour
             return;
         }
 
-        card.SetHand(this, offsetFromAnchor);
+        card.SetHand(this, offsetFromAnchor, _isShown);
         _cardsInHand.Add(card);
         PositionCardsInHand();
     }
@@ -77,5 +78,21 @@ public class Hand : MonoBehaviour
             card.SetSelectState(true);
             _selectedCard = card;
         }        
+    }
+
+    public void SetActiveState(bool isActive)
+    {
+        if (isActive == _isShown)
+        {
+            return;
+        }
+
+        _isShown = isActive;
+
+        foreach (var card in _cardsInHand)
+        { 
+            card.FlipCard(_isShown);
+            card.IsInteractable = _isShown;
+        }
     }
 }
