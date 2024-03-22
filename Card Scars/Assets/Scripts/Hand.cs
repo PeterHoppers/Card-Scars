@@ -1,16 +1,22 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Hand : MonoBehaviour
 {
-    public float rotationPerCard = 20f;
-    public int offsetFromAnchor = 200;
+    public HandDisplaySettings handDisplaySettings;
     public int maxHandSize = 5; //Unsure if needed, but keeps the visual from getting a bit weird
 
+    [Header("Selection Settings")]
+    public bool doesDoubleSelectPlay = true; //change these settings when we need to select multiple cards at once
+    public bool isAutomaticReselect = true;
+    public int maxSelectedCards = 1;
+
     List<Card> _cardsInHand = new List<Card>();
-    Card _selectedCard;
+    List<Card> _selectedCards = new List<Card>();
     bool _isShown = false;
+    Player _handOwner;
 
     void Start()
     {
@@ -25,11 +31,19 @@ public class Hand : MonoBehaviour
         for (int cardIndex = 0; cardIndex < amountOfCards; cardIndex++)
         {
             var card = _cardsInHand[cardIndex];
-            card.PositionInHand = cardIndex;
-            float cardRotation = (float)positionMultiplier * rotationPerCard;
+            card.PositionInCollection = cardIndex;
+            float cardRotation = (float)positionMultiplier * handDisplaySettings.rotationPerCard;
+            float cardXPosition = (float)positionMultiplier * handDisplaySettings.spacingPerCard;
             card.transform.rotation = Quaternion.Euler(0, 0, cardRotation);
+            card.transform.localPosition = new Vector2(cardXPosition, Mathf.Abs(cardRotation) * -3); //use the rotation here to keep the top of the cards straight
             positionMultiplier += 1;
         }
+    }
+
+    public void SetPlayer(Player player)
+    {
+        _handOwner = player;
+        _handOwner.OnCardPlayed += RemoveCardFromHand;
     }
 
     public void AddCardToHand(Card card)
@@ -39,44 +53,62 @@ public class Hand : MonoBehaviour
             return;
         }
 
-        card.SetHand(this, offsetFromAnchor, _isShown);
+        card.SetHand(this, handDisplaySettings.offsetFromAnchor, _isShown);
         _cardsInHand.Add(card);
         PositionCardsInHand();
     }
 
-    public Card PlaySelectedCard()
+    public void RemoveCardFromHand(Card card)
     {
-        if (_selectedCard == null)
-        {
-            return null;
-        }
-
-        var playedCard = _selectedCard;
-        playedCard.RemoveHand();
-        playedCard.transform.rotation = Quaternion.Euler(0, 0, 0);
-
-        _cardsInHand.Remove(playedCard);
-        SetSelectedCard(playedCard, false);
+        card.RemoveHand();
+        _cardsInHand.Remove(card);
+        _selectedCards.Remove(card);
         PositionCardsInHand();
-
-        return playedCard;
     }
 
-    public void SetSelectedCard(Card card, bool isBeingSelected)
+    public void SetSelectedCard(Card card)
     {
-        if (_selectedCard != null)
+        if (_selectedCards.Contains(card))
         {
-            _selectedCard.SetSelectState(false);
-        }
-
-        if (!isBeingSelected)
-        {
-            _selectedCard = null;
+            if (doesDoubleSelectPlay)
+            {
+                _handOwner.PlayCard(card);
+            }
+            else
+            {
+                SetCardSelectedState(card, false);
+            }
         }
         else
         {
-            card.SetSelectState(true);
-            _selectedCard = card;
+            //if we can add the new card to the list of selected cards
+            if (_selectedCards.Count < maxSelectedCards)
+            {
+                SetCardSelectedState(card, true);
+            }
+            else
+            {
+                if (isAutomaticReselect)
+                {
+                    Card cardToDeselect = _selectedCards.First();
+                    SetCardSelectedState(cardToDeselect, false);
+                    SetCardSelectedState(card, true);
+                }
+            }
+        }     
+    }
+
+    void SetCardSelectedState(Card card, bool isSelected)
+    {
+        card.SetSelectState(isSelected);
+
+        if (isSelected)
+        {
+            _selectedCards.Add(card);
+        }
+        else
+        {
+            _selectedCards.Remove(card);
         }        
     }
 

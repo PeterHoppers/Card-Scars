@@ -743,7 +743,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gameBoard: {fileID: 981458482}
   gamePlayer: {fileID: 5075724160073246334, guid: cc9eddf6a1bbd3a4f812abe6279a35cc, type: 3}
-  cardGameObject: {fileID: 2793002492261297726, guid: 460669e89a856464c93c2b4a4d7ac504, type: 3}
+  cardGameObject: {fileID: 2793002492261297726, guid: 934ef332e75ffa342bf7c6f56076f795, type: 3}
   playerNames:
   - Steve
   - Evil Dave

@@ -2,13 +2,14 @@ using System;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using static Player;
 
 public class Card : MonoBehaviour
 {
     private string cardOwner;
     private CardType cardType;
     private int cardScars;
-    private int positionInHand;
+    private int positionInCollection;
     private bool isFaceUp = false;
     private bool isSelected = false;
     private bool isInteractable = true;
@@ -29,7 +30,7 @@ public class Card : MonoBehaviour
         //TODO: When we have multiple players, make sure a player can't hover/interact with their opponent's cards
         if (hand != null && isInteractable)
         {
-            transform.localScale = new Vector2(1.1f, 1.1f);
+            SetHoverStyle(true);
         }
     }
 
@@ -37,7 +38,7 @@ public class Card : MonoBehaviour
     {
         if (hand != null && isInteractable)
         {
-            transform.localScale = new Vector2(1.0f, 1.0f);
+            SetHoverStyle(false);
         }
     }
 
@@ -45,7 +46,7 @@ public class Card : MonoBehaviour
     {
         if (hand != null && isInteractable)
         {
-            hand.SetSelectedCard(this, !isSelected);
+            hand.SetSelectedCard(this);
         }        
     }
 
@@ -62,8 +63,10 @@ public class Card : MonoBehaviour
 
     public void RemoveHand()
     {
+        SetSelectState(false);
         this.hand = null;
         UpdateVisualOffset(0);
+        transform.rotation = Quaternion.Euler(0, 0, 0);
     }
 
     void UpdateVisualOffset(float offsetFromAnchor)
@@ -72,15 +75,27 @@ public class Card : MonoBehaviour
         boxCollider.offset = new Vector2(0, offsetFromAnchor);
     }
 
+    void SetHoverStyle(bool isHovered)
+    {
+        if (isHovered)
+        {
+            transform.localScale = new Vector2(1.1f, 1.1f);
+        }
+        else
+        {
+            transform.localScale = new Vector2(1.0f, 1.0f);
+        }
+    }
+
     public void SetSelectState(bool isSelected)
     {
         if (isSelected)
         {            
-            transform.localPosition = new Vector2(0, 20f);
+            transform.localPosition = new Vector2(transform.localPosition.x, transform.localPosition .y + 20f);
         }
         else
         {
-            transform.localPosition = new Vector2(0, 0);
+            transform.localPosition = new Vector2(transform.localPosition.x, transform.localPosition.y - 20f);
         }
 
         this.isSelected = isSelected;
@@ -121,12 +136,12 @@ public class Card : MonoBehaviour
         get { return cardScars; }
         set { cardScars = value; }
     }
-    public int PositionInHand
+    public int PositionInCollection
     { 
-        get { return positionInHand; }
+        get { return positionInCollection; }
         set 
         {
-            positionInHand = value;
+            positionInCollection = value;
             cardRenderer.sortingOrder = value;
         }
     }
