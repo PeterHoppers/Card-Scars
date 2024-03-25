@@ -16,7 +16,7 @@ public class GameManager : MonoBehaviour
     Player activePlayer;
     int activePlayerIndex = 0;
 
-    public const int CARDS_SCARS_MAX_VALUE = 10;
+    public const int CARDS_SCARS_MAX_VALUE = 11;
     public const int CARDS_SCARS_PLAYER_COUNT = 2;
     public const int CARDS_SCARS_HAND_AMOUNT = 5;
 

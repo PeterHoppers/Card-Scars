@@ -12,6 +12,11 @@ public class Player : MonoBehaviour
     public delegate void PlayedCard(Card card);
     public PlayedCard OnCardPlayed;
 
+    void Start()
+    {
+        hand.SetPlayer(this);
+    }
+
     public void DrawCards(int cardAmount)
     {
         for (int index = 0; index < cardAmount; index++)
@@ -22,9 +27,8 @@ public class Player : MonoBehaviour
     }
 
     //TODO: Use events so that the play cards button is disabled until a card is selected
-    public void PlayCard()
+    public void PlayCard(Card card)
     { 
-        var card = hand.PlaySelectedCard();
         if (card != null)
         {
             playerDeck.discardPile.AddCard(card);
