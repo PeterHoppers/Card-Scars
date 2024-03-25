@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class GameManager : MonoBehaviour
 {     
@@ -26,14 +27,15 @@ public class GameManager : MonoBehaviour
     public PlayerTurnStart OnPlayerTurnStart;
     public PlayerTurnEnd OnPlayerTurnEnd;
 
-    void Start()
+    IEnumerator Start()
     {
-        ShuffleMainDeck();
+        playableCards = CreateMainDeck();
         players = CreatePlayers(CARDS_SCARS_PLAYER_COUNT);
-        DealCardsToPlayerDecks(players.Count);
+        SplitDeckToPlayers(players.Count);
         SetStartingHands(CARDS_SCARS_HAND_AMOUNT);
         boardManager.SetupManager(this);
 
+        yield return new WaitForSeconds(1.5f); //this will get replaced with showing an animation of some cards getting marked at the start of the game
         StartPlayerTurn(players[activePlayerIndex]);
     }
 
@@ -72,13 +74,13 @@ public class GameManager : MonoBehaviour
         }        
     }
 
-    private void ShuffleMainDeck()
+    private Deck CreateMainDeck()
     {
-        playableCards = gameObject.AddComponent<Deck>();
-        playableCards.CreateDeck(cardGameObject, CARDS_SCARS_MAX_VALUE);
-        // Shuffle the deck
-        playableCards.ShuffleDeck();
+        var deck = gameObject.AddComponent<Deck>();
+        deck.CreateDeck(cardGameObject, CARDS_SCARS_MAX_VALUE);
+        return deck;
     }
+
     private List<Player> CreatePlayers(int numPlayers)
     {
         var playerList = new List<Player>();
@@ -112,6 +114,30 @@ public class GameManager : MonoBehaviour
             currentPlayer = (currentPlayer + 1) % numPlayers;
         }
     }
+
+    private void SplitDeckToPlayers(int numPlayers)
+    {
+        int cardsPerPlayer = playableCards.cardsInDeck.Count / numPlayers;
+
+        for (int playerIndex = 0; playerIndex < players.Count; playerIndex++)
+        { 
+            Player player = players[playerIndex];
+            int startIndex = playerIndex * cardsPerPlayer;
+            int endIndex = startIndex + cardsPerPlayer;
+
+            var cardsToAdd = playableCards.cardsInDeck.Skip(startIndex).Take(endIndex - startIndex);
+
+            foreach (Card card in cardsToAdd)
+            {
+                //Assign card to the player deck and update the Card Owner
+                player.AddCardToDeck(card);
+                card.CardOwner = player.playerName;
+            }
+
+            player.ShuffleCards();
+        }        
+    }
+
     private void SetStartingHands(int cardAmount)
     {
         foreach (Player player in players)

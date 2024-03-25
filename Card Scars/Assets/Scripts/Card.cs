@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UIElements;
 using static Player;
 
 public class Card : MonoBehaviour
@@ -17,11 +18,13 @@ public class Card : MonoBehaviour
 
     private SpriteRenderer cardRenderer;
     private BoxCollider2D boxCollider;
+    private TransformTransition transition;
 
     void Awake()
     {
         cardRenderer = GetComponentInChildren<SpriteRenderer>();
         boxCollider = GetComponent<BoxCollider2D>();
+        transition = GetComponent<TransformTransition>();
         FlipCard(isFaceUp);
     }
 
@@ -53,7 +56,7 @@ public class Card : MonoBehaviour
     public void SetHand(Hand hand, float offsetFromAnchor, bool isShown)
     {
         this.hand = hand;
-        transform.SetParent(hand.transform, false);
+        transform.SetParent(hand.transform, true);
 
         //since our visual is in the child, we need to make sure the values between the two of them respect the offset that we set up
         UpdateVisualOffset(offsetFromAnchor);
@@ -79,23 +82,23 @@ public class Card : MonoBehaviour
     {
         if (isHovered)
         {
-            transform.localScale = new Vector2(1.1f, 1.1f);
+            UpdateScale(new Vector2(1.1f, 1.1f));
         }
         else
         {
-            transform.localScale = new Vector2(1.0f, 1.0f);
+            UpdateScale(new Vector2(1.0f, 1.0f));
         }
     }
 
     public void SetSelectState(bool isSelected)
     {
         if (isSelected)
-        {            
-            transform.localPosition = new Vector2(transform.localPosition.x, transform.localPosition .y + 20f);
+        {
+            UpdateLocalPosition(new Vector2(transform.localPosition.x, transform.localPosition.y + 20f));
         }
         else
         {
-            transform.localPosition = new Vector2(transform.localPosition.x, transform.localPosition.y - 20f);
+            UpdateLocalPosition(new Vector2(transform.localPosition.x, transform.localPosition.y - 20f));
         }
 
         this.isSelected = isSelected;
@@ -113,6 +116,42 @@ public class Card : MonoBehaviour
         }
 
         this.isFaceUp = isFaceUp;
+    }
+
+    public void UpdateLocalPosition(Vector2 position, float speed = .125f)
+    {
+        if (transition == null)
+        {
+            transform.localPosition = position;
+        }
+        else
+        { 
+            transition.MoveTo(position, speed);
+        }
+    }
+
+    public void UpdateRotation(Quaternion rotation, float speed = .125f)
+    {
+        if (transition == null)
+        {
+            transform.rotation = rotation;
+        }
+        else
+        {
+            transition.RotateTo(rotation, speed);
+        }
+    }
+
+    void UpdateScale(Vector2 scale, float speed = .125f)
+    {
+        if (transition == null)
+        {
+            transform.localScale = scale;
+        }
+        else
+        { 
+            transition.ScaleTo(scale, speed);
+        }
     }
 
     public override string ToString()

@@ -34,8 +34,8 @@ public class Hand : MonoBehaviour
             card.PositionInCollection = cardIndex;
             float cardRotation = (float)positionMultiplier * handDisplaySettings.rotationPerCard;
             float cardXPosition = (float)positionMultiplier * handDisplaySettings.spacingPerCard;
-            card.transform.rotation = Quaternion.Euler(0, 0, cardRotation);
-            card.transform.localPosition = new Vector2(cardXPosition, Mathf.Abs(cardRotation) * -3); //use the rotation here to keep the top of the cards straight
+            card.UpdateRotation(Quaternion.Euler(0, 0, cardRotation));
+            card.UpdateLocalPosition(new Vector2(cardXPosition, Mathf.Abs(cardRotation) * -3)); //use the rotation here to keep the top of the cards straight
             positionMultiplier += 1;
         }
     }
@@ -64,6 +64,14 @@ public class Hand : MonoBehaviour
         _cardsInHand.Remove(card);
         _selectedCards.Remove(card);
         PositionCardsInHand();
+    }
+
+    public void DiscardHand()
+    {
+        foreach (Card card in _cardsInHand)
+        {
+            RemoveCardFromHand(card);
+        }
     }
 
     public void SetSelectedCard(Card card)
