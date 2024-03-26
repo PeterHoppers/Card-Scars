@@ -6,6 +6,7 @@ public class Deck : MonoBehaviour
 {
     public List<Card> cardsInDeck;  
     public float perCardXOffset = 0;
+    public float perCardYOffset = 0;
     
     public List<Card> CreateDeck(Card cardType, int maxValueOfCard)
     {
@@ -36,7 +37,7 @@ public class Deck : MonoBehaviour
     {
         int indexInDeck = cardsInDeck.Count + 1;
         addedCard.transform.SetParent(transform, false);
-        addedCard.transform.localPosition = new Vector2(indexInDeck * perCardXOffset, 0);
+        addedCard.transform.localPosition = new Vector2(indexInDeck * perCardXOffset, indexInDeck * perCardYOffset);
         addedCard.PositionInCollection = indexInDeck;
         cardsInDeck.Add(addedCard);
     }

@@ -2,13 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using AYellowpaper.SerializedCollections;
 
 public class GameManager : MonoBehaviour
 {     
     public GameObject gameBoard;
-    public Player gamePlayer;
     public Card cardGameObject;
-    public List<string> playerNames = new List<string>();
+    [SerializedDictionary("Player Object", "Player Settings")]
+    public SerializedDictionary<Player, PlayerSettings> PlayerSetup;
 
     public BoardManager boardManager; //TODO: Remove direct reference and create an interface
 
@@ -30,7 +31,7 @@ public class GameManager : MonoBehaviour
     IEnumerator Start()
     {
         playableCards = CreateMainDeck();
-        players = CreatePlayers(CARDS_SCARS_PLAYER_COUNT);
+        players = CreatePlayers(PlayerSetup.Count);
         SplitDeckToPlayers(players.Count);
         SetStartingHands(CARDS_SCARS_HAND_AMOUNT);
         boardManager.SetupManager(this);
@@ -87,12 +88,13 @@ public class GameManager : MonoBehaviour
         for (int i = 0; i < numPlayers; i++)
         {
             // Create an copy of the player game object for each player in the game
-            GameObject playerObject = Instantiate(gamePlayer.gameObject, gameBoard.transform);            
+            //GameObject playerObject = Instantiate(gamePlayer.gameObject, gameBoard.transform);
+            GameObject playerObject = PlayerSetup.ElementAt(i).Key.gameObject;
 
             // Add the player to the list
             var newPlayer = playerObject.GetComponent<Player>();
             newPlayer.index = i;
-            newPlayer.playerName = playerNames[i];
+            newPlayer.playerName = PlayerSetup.ElementAt(i).Value.playerName;
             newPlayer.name = newPlayer.playerName;
             playerObject.name = newPlayer.playerName + "'s Deck";
             playerList.Add(newPlayer);

@@ -142,7 +142,7 @@ public class Card : MonoBehaviour
         }
     }
 
-    void UpdateScale(Vector2 scale, float speed = .125f)
+    public void UpdateScale(Vector2 scale, float speed = .125f)
     {
         if (transition == null)
         {

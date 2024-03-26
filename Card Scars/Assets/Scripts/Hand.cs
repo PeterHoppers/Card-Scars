@@ -36,6 +36,7 @@ public class Hand : MonoBehaviour
             float cardXPosition = (float)positionMultiplier * handDisplaySettings.spacingPerCard;
             card.UpdateRotation(Quaternion.Euler(0, 0, cardRotation));
             card.UpdateLocalPosition(new Vector2(cardXPosition, Mathf.Abs(cardRotation) * -3)); //use the rotation here to keep the top of the cards straight
+            card.UpdateScale(Vector3.one);
             positionMultiplier += 1;
         }
     }
