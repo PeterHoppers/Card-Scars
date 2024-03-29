@@ -35,7 +35,7 @@ public class Hand : MonoBehaviour
             float cardRotation = (float)positionMultiplier * handDisplaySettings.rotationPerCard;
             float cardXPosition = (float)positionMultiplier * handDisplaySettings.spacingPerCard;
             card.UpdateRotation(Quaternion.Euler(0, 0, cardRotation));
-            card.UpdateLocalPosition(new Vector2(cardXPosition, Mathf.Abs(cardRotation) * -3)); //use the rotation here to keep the top of the cards straight
+            card.UpdatePosition(new Vector2(cardXPosition, Mathf.Abs(cardRotation) * -3)); //use the rotation here to keep the top of the cards straight
             card.UpdateScale(Vector3.one);
             positionMultiplier += 1;
         }
@@ -134,6 +134,22 @@ public class Hand : MonoBehaviour
         { 
             card.FlipCard(_isShown);
             card.IsInteractable = _isShown;
+
+            if (!_isShown)
+            {
+                card.SetHoverStyle(false);
+            }
+        }
+    }
+
+    void DeselectAllCards()
+    {
+        //clone selected cards like this so that we don't modify our foreach loop while we remove from the selected cards list
+        var selectedCards = _selectedCards.ToArray();
+
+        foreach (var card in selectedCards)
+        {
+            SetCardSelectedState(card, false);
         }
     }
 }

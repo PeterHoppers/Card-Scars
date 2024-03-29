@@ -78,7 +78,7 @@ public class Card : MonoBehaviour
         boxCollider.offset = new Vector2(0, offsetFromAnchor);
     }
 
-    void SetHoverStyle(bool isHovered)
+    public void SetHoverStyle(bool isHovered)
     {
         if (isHovered)
         {
@@ -94,11 +94,11 @@ public class Card : MonoBehaviour
     {
         if (isSelected)
         {
-            UpdateLocalPosition(new Vector2(transform.localPosition.x, transform.localPosition.y + 20f));
+            UpdatePosition(new Vector2(transform.localPosition.x, transform.localPosition.y + 20f));
         }
         else
         {
-            UpdateLocalPosition(new Vector2(transform.localPosition.x, transform.localPosition.y - 20f));
+            UpdatePosition(new Vector2(transform.localPosition.x, transform.localPosition.y - 20f));
         }
 
         this.isSelected = isSelected;
@@ -118,7 +118,7 @@ public class Card : MonoBehaviour
         this.isFaceUp = isFaceUp;
     }
 
-    public void UpdateLocalPosition(Vector2 position, float speed = .125f)
+    public void UpdatePosition(Vector2 position, float speed = .125f, bool isLocal = true)
     {
         if (transition == null)
         {
@@ -126,7 +126,7 @@ public class Card : MonoBehaviour
         }
         else
         { 
-            transition.MoveTo(position, speed);
+            transition.MoveTo(position, speed, isLocal);
         }
     }
 

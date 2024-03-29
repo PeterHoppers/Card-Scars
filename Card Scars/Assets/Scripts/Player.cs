@@ -35,8 +35,7 @@ public class Player : MonoBehaviour
     public void PlayCard(Card card)
     { 
         if (card != null)
-        {
-            playerDeck.discardPile.AddCard(card);
+        {            
             OnCardPlayed?.Invoke(card);
         }        
     }
@@ -44,6 +43,11 @@ public class Player : MonoBehaviour
     public void AddCardToDeck(Card addedCard)
     { 
         playerDeck.drawPile.AddCard(addedCard);
+    }
+
+    public void AddCardToDiscard(Card discardedCard) 
+    {
+        playerDeck.discardPile.AddCard(discardedCard, true, .25f); //TODO: remove magic number like this
     }
 
     public void SetActivateState(bool isActive)

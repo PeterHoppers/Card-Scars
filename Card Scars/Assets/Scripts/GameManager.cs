@@ -55,7 +55,15 @@ public class GameManager : MonoBehaviour
     private void EndPlayerTurn(Card card)
     {
         activePlayer.OnCardPlayed -= EndPlayerTurn;
+        StartCoroutine(AdvanceTurn(card));       
+    }
 
+    //TODO: Rather than advancing the turn after a short bit, have this code wait until something has been completed, depending on the card
+    IEnumerator AdvanceTurn(Card card)
+    {
+        card.UpdatePosition(Vector2.zero, .25f, false);
+        yield return new WaitForSeconds(.5f);
+        activePlayer.AddCardToDiscard(card);
         OnPlayerTurnEnd?.Invoke(activePlayer);
         activePlayer.SetActivateState(false);
         StartPlayerTurn(GetNextPlayer());
