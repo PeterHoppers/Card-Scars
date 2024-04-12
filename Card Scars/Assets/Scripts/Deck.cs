@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 public class Deck : MonoBehaviour
 {
     public List<Card> cardsInDeck;  
     public float perCardXOffset = 0;
+    public float perCardYOffset = 0;
     
     public List<Card> CreateDeck(Card cardType, int maxValueOfCard)
     {
@@ -32,11 +34,11 @@ public class Deck : MonoBehaviour
         return standardDeck;
     }
 
-    public void AddCard(Card addedCard)
+    public void AddCard(Card addedCard, bool changePosition = false, float speed = .25f)
     {
         int indexInDeck = cardsInDeck.Count + 1;
-        addedCard.transform.SetParent(transform, false);
-        addedCard.transform.localPosition = new Vector2(indexInDeck * perCardXOffset, 0);
+        addedCard.transform.SetParent(transform, changePosition);
+        addedCard.UpdatePosition(new Vector2(indexInDeck * perCardXOffset, indexInDeck * perCardYOffset), speed);
         addedCard.PositionInCollection = indexInDeck;
         cardsInDeck.Add(addedCard);
     }

@@ -19,19 +19,23 @@ public class Player : MonoBehaviour
 
     public void DrawCards(int cardAmount)
     {
+        StartCoroutine(DrawCards(cardAmount, .25f));
+    }
+
+    IEnumerator DrawCards(int cardAmount, float delayPerCard)
+    {
         for (int index = 0; index < cardAmount; index++)
         {
             var card = playerDeck.DrawCard();
             hand.AddCardToHand(card);
-        }            
+            yield return new WaitForSeconds(delayPerCard);
+        }
     }
 
-    //TODO: Use events so that the play cards button is disabled until a card is selected
     public void PlayCard(Card card)
     { 
         if (card != null)
-        {
-            playerDeck.discardPile.AddCard(card);
+        {            
             OnCardPlayed?.Invoke(card);
         }        
     }
@@ -41,8 +45,19 @@ public class Player : MonoBehaviour
         playerDeck.drawPile.AddCard(addedCard);
     }
 
+    public void AddCardToDiscard(Card discardedCard) 
+    {
+        playerDeck.discardPile.AddCard(discardedCard, true, .25f); //TODO: remove magic number like this
+    }
+
     public void SetActivateState(bool isActive)
     { 
         hand.SetActiveState(isActive);
+    }
+
+    public void ShuffleCards()
+    {
+        hand.DiscardHand();
+        playerDeck.ShufflePiles();
     }
 }

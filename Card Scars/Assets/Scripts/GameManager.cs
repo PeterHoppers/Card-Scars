@@ -1,13 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
+using AYellowpaper.SerializedCollections;
 
 public class GameManager : MonoBehaviour
 {     
     public GameObject gameBoard;
-    public Player gamePlayer;
     public Card cardGameObject;
-    public List<string> playerNames = new List<string>();
+    [SerializedDictionary("Player Object", "Player Settings")]
+    public SerializedDictionary<Player, PlayerSettings> PlayerSetup;
 
     public BoardManager boardManager; //TODO: Remove direct reference and create an interface
 
@@ -26,14 +28,15 @@ public class GameManager : MonoBehaviour
     public PlayerTurnStart OnPlayerTurnStart;
     public PlayerTurnEnd OnPlayerTurnEnd;
 
-    void Start()
+    IEnumerator Start()
     {
-        ShuffleMainDeck();
-        players = CreatePlayers(CARDS_SCARS_PLAYER_COUNT);
-        DealCardsToPlayerDecks(players.Count);
+        playableCards = CreateMainDeck();
+        players = CreatePlayers(PlayerSetup.Count);
+        SplitDeckToPlayers(players.Count);
         SetStartingHands(CARDS_SCARS_HAND_AMOUNT);
         boardManager.SetupManager(this);
 
+        yield return new WaitForSeconds(1.5f); //this will get replaced with showing an animation of some cards getting marked at the start of the game
         StartPlayerTurn(players[activePlayerIndex]);
     }
 
@@ -52,7 +55,15 @@ public class GameManager : MonoBehaviour
     private void EndPlayerTurn(Card card)
     {
         activePlayer.OnCardPlayed -= EndPlayerTurn;
+        StartCoroutine(AdvanceTurn(card));       
+    }
 
+    //TODO: Rather than advancing the turn after a short bit, have this code wait until something has been completed, depending on the card
+    IEnumerator AdvanceTurn(Card card)
+    {
+        card.UpdatePosition(Vector2.zero, .25f, false);
+        yield return new WaitForSeconds(.5f);
+        activePlayer.AddCardToDiscard(card);
         OnPlayerTurnEnd?.Invoke(activePlayer);
         activePlayer.SetActivateState(false);
         StartPlayerTurn(GetNextPlayer());
@@ -72,25 +83,26 @@ public class GameManager : MonoBehaviour
         }        
     }
 
-    private void ShuffleMainDeck()
+    private Deck CreateMainDeck()
     {
-        playableCards = gameObject.AddComponent<Deck>();
-        playableCards.CreateDeck(cardGameObject, CARDS_SCARS_MAX_VALUE);
-        // Shuffle the deck
-        playableCards.ShuffleDeck();
+        var deck = gameObject.AddComponent<Deck>();
+        deck.CreateDeck(cardGameObject, CARDS_SCARS_MAX_VALUE);
+        return deck;
     }
+
     private List<Player> CreatePlayers(int numPlayers)
     {
         var playerList = new List<Player>();
         for (int i = 0; i < numPlayers; i++)
         {
             // Create an copy of the player game object for each player in the game
-            GameObject playerObject = Instantiate(gamePlayer.gameObject, gameBoard.transform);            
+            //GameObject playerObject = Instantiate(gamePlayer.gameObject, gameBoard.transform);
+            GameObject playerObject = PlayerSetup.ElementAt(i).Key.gameObject;
 
             // Add the player to the list
             var newPlayer = playerObject.GetComponent<Player>();
             newPlayer.index = i;
-            newPlayer.playerName = playerNames[i];
+            newPlayer.playerName = PlayerSetup.ElementAt(i).Value.playerName;
             newPlayer.name = newPlayer.playerName;
             playerObject.name = newPlayer.playerName + "'s Deck";
             playerList.Add(newPlayer);
@@ -112,6 +124,30 @@ public class GameManager : MonoBehaviour
             currentPlayer = (currentPlayer + 1) % numPlayers;
         }
     }
+
+    private void SplitDeckToPlayers(int numPlayers)
+    {
+        int cardsPerPlayer = playableCards.cardsInDeck.Count / numPlayers;
+
+        for (int playerIndex = 0; playerIndex < players.Count; playerIndex++)
+        { 
+            Player player = players[playerIndex];
+            int startIndex = playerIndex * cardsPerPlayer;
+            int endIndex = startIndex + cardsPerPlayer;
+
+            var cardsToAdd = playableCards.cardsInDeck.Skip(startIndex).Take(endIndex - startIndex);
+
+            foreach (Card card in cardsToAdd)
+            {
+                //Assign card to the player deck and update the Card Owner
+                player.AddCardToDeck(card);
+                card.CardOwner = player.playerName;
+            }
+
+            player.ShuffleCards();
+        }        
+    }
+
     private void SetStartingHands(int cardAmount)
     {
         foreach (Player player in players)
